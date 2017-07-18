@@ -131,12 +131,28 @@ func createAllRuntimeConfigFiles(dir, hypervisor string) (config testRuntimeConf
 		}
 	}
 
+	var machineType string
+
+	switch hypervisor {
+	case q35HypervisorTableType:
+		machineType = vc.QemuQ35
+		break
+	case qemuHypervisorTableType:
+		fallthrough
+	case qemuLiteHypervisorTableType:
+		machineType = vc.QemuPCLite
+		break
+	default:
+		return config, err
+	}
+
 	hypervisorConfig := vc.HypervisorConfig{
-		HypervisorPath: hypervisorPath,
-		KernelPath:     kernelPath,
-		ImagePath:      imagePath,
-		DefaultVCPUs:   defaultVCPUCount,
-		DefaultMemSz:   defaultMemSize,
+		HypervisorPath:        hypervisorPath,
+		KernelPath:            kernelPath,
+		ImagePath:             imagePath,
+		HypervisorMachineType: machineType,
+		DefaultVCPUs:          defaultVCPUCount,
+		DefaultMemSz:          defaultMemSize,
 	}
 
 	agentConfig := vc.HyperConfig{
@@ -589,11 +605,12 @@ func TestMinimalRuntimeConfig(t *testing.T) {
 	}
 
 	expectedHypervisorConfig := vc.HypervisorConfig{
-		HypervisorPath: defaultHypervisorPath,
-		KernelPath:     defaultKernelPath,
-		ImagePath:      defaultImagePath,
-		DefaultVCPUs:   defaultVCPUCount,
-		DefaultMemSz:   defaultMemSize,
+		HypervisorPath:        defaultHypervisorPath,
+		KernelPath:            defaultKernelPath,
+		ImagePath:             defaultImagePath,
+		HypervisorMachineType: vc.QemuQ35,
+		DefaultVCPUs:          defaultVCPUCount,
+		DefaultMemSz:          defaultMemSize,
 	}
 
 	expectedAgentConfig := vc.HyperConfig{
